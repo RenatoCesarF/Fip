@@ -9,6 +9,7 @@ import pygame
 from urllib.parse import urlparse, unquote
 
 from configs import configs
+from state import State
 
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 650
@@ -16,32 +17,43 @@ RIGHT_MARGIN = 10
 TOP_MARGIN = 10
 LEFT_MARGIN = 15 
 
-import_dir = "/Volumes/POLEN/DCIM/100MEDIA"
-TODAY_STR = datetime.today().strftime('%Y-%m-%d')
-work_dir = "./pics"
-to_delete = []
 
+# - [ ] BUG: FileNotFoundError: No file './pics/2026-07-26/CF0012.JPG' found in working directory '/Users/renatocesar/code/fip'.
+# - [ ] BUG:    ~~~~^^ File "/Users/renatocesar/code/fip/./main.py", line 149, in main path = f"{source_dir}/{correct_image_name(image_names[cur_img_index])}" ~~~~~~~~~~~^^^^^^^^^^^^^^^ IndexError: list index out of range
+
+# - [ ] Possibilitar escolha da pasta raiz 
+# - [ ] Possibilitar rescaling ou pelo menos um fullscreen
+# - [ ] Impossibilitar de passar da ultima foto, e antepassar da primeira foto.
+# - [ ] Escrever um README sobre o uso/instalação.
+# - [ ] Refatorar o sistema de input pra uma função a parte:
+#   - [ ] Criar uma classe global do estado do programa
+# - [ ] Colocar um icone de favorito que é preenchido ou despreenchido 
+# - [ ] Desfavoritar imagens (deletar da pasta de favoritos)
+# - [ ] Items que foram marcado pra serem deletados aparecem com algum visual diferente (?)
+# - [ ] em algum lugar (topo, base) mostrar uma lista das fotos, próximas e anteriores de forma 
+#        que vamos nos movimentando nessa lista. Essa lista vai ter icones também (deletado/favoritado)
+# - [ ] popup ou dicas, sobre teclas pra usar o programa (importante)
+# - [ ] sons de favorito e deleção, além de outros sons satisfatórios.
+
+
+state = State()
+should_load_image = False
+work_dir = "./pics"
+source_dir = f"{work_dir}/{datetime.today().strftime('%Y-%m-%d')}"
+import_dir = "/Volumes/POLEN/DCIM/100MEDIA"
+to_delete = []
 
 pygame.init()
 pygame.key.set_repeat()
 font = pygame.font.Font(pygame.font.get_default_font(), 20)
 
 def main():
+    global state
+
     clock = pygame.time.Clock()
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 
     pygame.display.set_caption("FIP - FilterIng Pictures")
-
-    cur_img_index = 0
-    cur_scale = 0.15
-    cur_rotation = 0
-    cur_x_padding = 0
-    cur_y_padding = 0
-
-    is_cur_image_loaded = False
-    curr_image = None
-    should_load_image = False
-    source_dir = f"{work_dir}/{TODAY_STR}"
 
     # IMPORTING FILES
     if should_load_image:
@@ -68,32 +80,32 @@ def main():
             if event.type == pygame.KEYDOWN:
                 if keys[pygame.K_r]:
                     if is_shift_on:
-                        curr_image = pygame.transform.rotate(curr_image, 90)
-                        cur_rotation += 90
+                        state.curr_image = pygame.transform.rotate(state.curr_image, 90)
+                        state.cur_rotation += 90
                     else:
-                        curr_image = pygame.transform.rotate(curr_image, -90)
-                        cur_rotation -= 90
+                        state.curr_image = pygame.transform.rotate(state.curr_image, -90)
+                        state.cur_rotation -= 90
 
                 if keys[pygame.K_RETURN]:
-                    cur_img_index += 1
+                    state.cur_img_index += 1
 
-                    is_cur_image_loaded = False
+                    state.is_cur_image_loaded = False
 
                 if keys[pygame.K_TAB]:
-                    cur_img_index -= 1
-
-                    is_cur_image_loaded = False
+                    state.cur_img_index -= 1
+                    state.is_cur_image_loaded = False
 
                 if keys[pygame.K_f]:
-                    shutil.copy(f"{source_dir}/{image_names[cur_img_index][2:]}", f"./fav/{image_names[cur_img_index][2:]}.JPG")
-                    cur_img_index += 1
-                    is_cur_image_loaded = False
+                    image_name = correct_image_name(image_names[state.cur_img_index])
+                    shutil.copy(f"{source_dir}/{image_name}", f"./fav/{image_name}.JPG")
+                    state.cur_img_index += 1
+                    state.is_cur_image_loaded = False
 
                 if keys[pygame.K_x]:
-                    to_delete.append(image_names[cur_img_index][2:])
+                    to_delete.append(correct_image_name(image_names[state.cur_img_index]))
 
-                    cur_img_index += 1
-                    is_cur_image_loaded = False
+                    state.cur_img_index += 1
+                    state.is_cur_image_loaded = False
 
                 if keys[pygame.K_b]:
                     if configs.current_background == (0,0,0):
@@ -103,45 +115,45 @@ def main():
 
 
             if keys[pygame.K_i]:
-                cur_scale += 0.05
-                curr_image = pygame.transform.scale_by(raw_image, (cur_scale,cur_scale))
-                curr_image = pygame.transform.rotate(curr_image, cur_rotation)
+                state.cur_scale += 0.05
+                state.curr_image = pygame.transform.scale_by(state.raw_image, (state.cur_scale,state.cur_scale))
+                state.curr_image = pygame.transform.rotate(state.curr_image, state.cur_rotation)
 
             if keys[pygame.K_o]:
-                if cur_scale >= 0.025:
-                    cur_scale -= 0.025
-                    curr_image = pygame.transform.scale_by(raw_image, (cur_scale,cur_scale))
-                    curr_image = pygame.transform.rotate(curr_image, cur_rotation)
+                if state.cur_scale >= 0.025:
+                    state.cur_scale -= 0.025
+                    state.curr_image = pygame.transform.scale_by(state.raw_image, (state.cur_scale,state.cur_scale))
+                    state.curr_image = pygame.transform.rotate(state.curr_image, state.cur_rotation)
 
             if keys[pygame.K_j]:
-                cur_y_padding += 10
+                state.cur_y_padding += 10
 
             if keys[pygame.K_k]:
-                cur_y_padding -= 10
+                state.cur_y_padding -= 10
 
             if keys[pygame.K_h]:
-                cur_x_padding += 10
+                state.cur_x_padding += 10
 
             if keys[pygame.K_l]:
-                cur_x_padding -= 10
+                state.cur_x_padding -= 10
 
 
         screen.fill((configs.current_background))
 
-        write(screen, f"Image: {cur_img_index}/{len(image_names)}", (LEFT_MARGIN, TOP_MARGIN), (5,5, 5))
-        if not is_cur_image_loaded:
-            path = f"{source_dir}/{image_names[cur_img_index][2:]}"
-            curr_image = pygame.image.load(path).convert()
-            raw_image = curr_image
-            curr_image = pygame.transform.scale_by(curr_image, (cur_scale , cur_scale))
-            curr_image = pygame.transform.rotate(curr_image, cur_rotation)
+        write(screen, f"Image: {state.cur_img_index}/{len(image_names)}", (LEFT_MARGIN, TOP_MARGIN), (5,5, 5))
+        if not state.is_cur_image_loaded:
+            path = f"{source_dir}/{correct_image_name(image_names[state.cur_img_index])}"
+            state.curr_image = pygame.image.load(path).convert()
+            state.raw_image = state.curr_image
+            state.curr_image = pygame.transform.scale_by(state.curr_image, (state.cur_scale , state.cur_scale))
+            state.curr_image = pygame.transform.rotate(state.curr_image, state.cur_rotation)
 
-            is_cur_image_loaded = True
+            state.is_cur_image_loaded = True
 
-        half_width = curr_image.get_width()/2 + cur_x_padding
-        half_height = curr_image.get_height()/2 + cur_y_padding
+        half_width = state.curr_image.get_width()/2 + state.cur_x_padding
+        half_height = state.curr_image.get_height()/2 + state.cur_y_padding
 
-        screen.blit(curr_image, 
+        screen.blit(state.curr_image, 
                     ((SCREEN_WIDTH/2) - half_width,
                      (SCREEN_HEIGHT/2) - half_height))
 
@@ -154,6 +166,11 @@ def main():
 def write(screen, text, pos, color):
     text_surface = font.render(text, True, color)
     screen.blit(text_surface, pos)
+
+def correct_image_name(og):
+    if og.startswith("._"):
+        return og[2:]
+    return og
 
 
 if  __name__ == "__main__":
