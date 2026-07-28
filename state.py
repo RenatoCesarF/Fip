@@ -33,7 +33,7 @@ class State:
         self.is_cur_image_loaded = False
 
     def zoom_image(self, amount):
-        if self.cur_scale <= 0.025:
+        if self.cur_scale <= 0.025 and amount < 0:
             return
         self.cur_scale += amount
         self.curr_image = pygame.transform.scale_by(self.raw_image, (self.cur_scale, self.cur_scale))
@@ -46,6 +46,7 @@ class State:
         screen.blit(self.curr_image, 
                     ((width/2) - half_width,
                      (height/2) - half_height))
+
     def load_image(self, path):
         self.curr_image = pygame.image.load(path).convert()
         self.raw_image = self.curr_image
