@@ -2,12 +2,16 @@ from os import walk
 
 import pygame
 
+from enums.home_option import HomeOption 
 from utils import correct_image_name
-from scenes.scene import SceneEnum
+from scenes.scene import SceneEnum, Scene
 
 class State:
+    curr_scene: Scene
     running: bool
+
     source_dir: str
+    import_dir: str
 
     cur_img_index: int
     should_load_image: bool
@@ -17,7 +21,6 @@ class State:
     cur_y_padding: int
     cur_scale: float
 
-
     favs: list[str]
     to_delete: list[str]
     imported_images: list[str]
@@ -26,11 +29,15 @@ class State:
     curr_image: object
     raw_image: object
 
+    home_selected_option: HomeOption
 
-    def __init__(self):
+    def __init__(self, scene):
+        self.curr_scene = scene
+
         self.running = True
 
         self.source_dir = f"./pics"#{datetime.today().strftime('%Y-%m-%d')}"
+        self.import_dir = "/Volumes/POLEN/DCIM/100MEDIA"
 
         self.should_load_image = False
         self.favs = []
@@ -47,6 +54,12 @@ class State:
         self.is_cur_image_loaded = False
         self.curr_image = None
         self.raw_image = None
+
+        #---- HOME ----
+        self.home_selected_option = HomeOption.FILTER
+
+    def switch_scene(self, scene: Scene):
+        self.curr_scene = scene
 
     def load_favorites(self):
         self.favs = next(walk("./fav"), (None, None, []))[2] 
@@ -89,3 +102,9 @@ class State:
 
         self.is_cur_image_loaded = True
 
+    def change_selected_button_home(self):
+        if self.home_selected_option == HomeOption.FILTER:
+            self.home_selected_option = HomeOption.IMPORT
+            return
+
+        self.home_selected_option = HomeOption.FILTER

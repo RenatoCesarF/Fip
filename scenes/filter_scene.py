@@ -1,4 +1,3 @@
-
 import shutil
 import os
 import pygame
@@ -7,15 +6,38 @@ from scenes.scene import Scene
 from state import State
 from globals import LEFT_MARGIN, RIGHT_MARGIN, TOP_MARGIN
 from configs import configs
-from utils import fill
 
-class MenuScene(Scene):
+class FilterScene(Scene):
+    heart_icon: pygame.Surface
+    trash_icon: pygame.Surface
 
     def __init__(self):
-        pass
+        self.heart_icon = pygame.image.load("./assets/fav.png").convert_alpha()
+        self.heart_icon = pygame.transform.scale_by(self.heart_icon, (0.05,0.05))
 
-    def process(self, screen, state,  screen_width, screen_height):
-        screen.fill((configs.current_background))
+        self.trash_icon = pygame.image.load("./assets/trash.png").convert_alpha()
+        self.trash_icon = pygame.transform.scale_by(self.trash_icon, (0.08,0.08))
+
+    def process(self, state, graphics):
+        graphics.write(f"Image: {state.cur_img_index + 1}/{len(state.imported_images)}", (LEFT_MARGIN, TOP_MARGIN), (205,205, 205))
+
+        if not state.is_cur_image_loaded:
+            self.load_image(state)
+
+        state.draw_current_image(graphics.screen, graphics.screen_width, graphics.screen_height)
+
+        # Heart Icon ----
+        if state.imported_images[state.cur_img_index] not in state.favs:
+           graphics.fill(self.heart_icon, (50,50,50, 200))
+        else:
+           graphics.fill(self.heart_icon, (250,50,50, 255))
+
+        graphics.screen.blit(self.heart_icon, (LEFT_MARGIN, graphics.screen_height - 70))
+
+        # Trash Icon ----
+        if state.imported_images[state.cur_img_index]in state.to_delete:
+            fill(self.trash_icon, (121,92,48, 255))
+            graphics.screen.blit(self.trash_icon, (LEFT_MARGIN + 70, graphics.screen_height - 70))
 
     def load_image(self, state):
         path = f"{state.source_dir}/{state.imported_images[state.cur_img_index]}"

@@ -3,7 +3,7 @@ import pygame
 from scenes.scene import Scene
 from state import State
 
-class ChoseFolderScene(Scene):
+class ImportScene(Scene):
     def __init__(self):
         pass
 
@@ -11,4 +11,4 @@ class ChoseFolderScene(Scene):
         pass
 
     def handle_input(self, state: State):
-        super().handle_input(state)
+        pass

@@ -11,7 +11,7 @@ class SceneEnum(Enum):
 
 class Scene(ABC):
     @abstractmethod
-    def process(self):
+    def process(self, state, graphics):
         """Every payment method must implement this."""
         pass
 
