@@ -1,4 +1,5 @@
 from os import walk
+import shutil
 
 import pygame
 
@@ -14,7 +15,6 @@ class State:
     import_dir: str
 
     cur_img_index: int
-    should_load_image: bool
 
     cur_rotation: int
     cur_x_padding: int
@@ -39,7 +39,6 @@ class State:
         self.source_dir = f"./pics"#{datetime.today().strftime('%Y-%m-%d')}"
         self.import_dir = "/Volumes/POLEN/DCIM/100MEDIA"
 
-        self.should_load_image = False
         self.favs = []
         self.to_delete = []
         self.imported_images = []
@@ -62,14 +61,15 @@ class State:
         self.curr_scene = scene
 
     def load_favorites(self):
-        self.favs = next(walk("./fav"), (None, None, []))[2] 
-        self.favs = sorted(self.favs)
+        self.favs = sorted(next(walk("./fav"), (None, None, []))[2])
         self.favs = [correct_image_name(img) for img in self.favs]
     
     def load_working_directory(self):
-        self.imported_images = next(walk(self.source_dir), (None, None, []))[2] 
-        self.imported_images = sorted(self.imported_images)
+        self.imported_images = sorted(next(walk(self.source_dir), (None, None, []))[2])
         self.imported_images = [correct_image_name(img) for img in self.imported_images]
+
+    def import_files(self, import_dir):
+        shutil.copytree(import_dir, state.source_dir)
 
     def rotate_image(self, amount: int):
         self.curr_image = pygame.transform.rotate(self.curr_image, amount)

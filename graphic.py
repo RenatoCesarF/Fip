@@ -30,3 +30,42 @@ class Graphic:
                 a = surface.get_at((x, y))[3]
                 surface.set_at((x, y), pygame.Color(r, g, b, a))
 
+    def draw_button(
+        self,
+        rect: pygame.Rect,
+        text: str,
+        selected: bool,
+    ):
+        if selected:
+            background = (255, 192, 203)
+            border = (255, 225, 230)
+            text_color = (45, 30, 35)
+        else:
+            background = (75, 55, 65)
+            border = (125, 90, 105)
+            text_color = (245, 235, 240)
+
+        pygame.draw.rect(
+            self.screen,
+            background,
+            rect,
+            border_radius=12,
+        )
+
+        pygame.draw.rect(
+            self.screen,
+            border,
+            rect,
+            width=3,
+            border_radius=12,
+        )
+
+        label = self.font.render(
+            text,
+            True,
+            text_color,
+        )
+
+        label_rect = label.get_rect(center=rect.center)
+        self.screen.blit(label, label_rect)
+

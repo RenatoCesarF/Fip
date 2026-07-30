@@ -1,0 +1,2 @@
+file-picker-py==0.2.0
+pygame==2.6.1
