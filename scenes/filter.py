@@ -1,0 +1,117 @@
+import shutil
+import os
+import pygame
+
+from scenes.scene import Scene
+from state import State
+from globals import LEFT_MARGIN, RIGHT_MARGIN, TOP_MARGIN
+from configs import configs
+from utils import fill
+
+class FilterScene(Scene):
+    heart_icon: pygame.Surface
+    trash_icon: pygame.Surface
+
+    def __init__(self):
+        self.heart_icon = pygame.image.load("./assets/fav.png").convert_alpha()
+        self.heart_icon = pygame.transform.scale_by(self.heart_icon, (0.05,0.05))
+
+        self.trash_icon = pygame.image.load("./assets/trash.png").convert_alpha()
+        self.trash_icon = pygame.transform.scale_by(self.trash_icon, (0.08,0.08))
+
+    def process(self, screen, state,  screen_width, screen_height):
+        screen.fill((configs.current_background))
+
+        # write(screen, f"Image: {state.cur_img_index + 1}/{len(state.imported_images)}", (LEFT_MARGIN, TOP_MARGIN), (5,5, 5))
+
+        if not state.is_cur_image_loaded:
+            self.load_image(state)
+
+        state.draw_current_image(screen, screen_width, screen_height)
+
+        # Heart Icon ----
+        if state.imported_images[state.cur_img_index] not in state.favs:
+           fill(self.heart_icon, (50,50,50, 200))
+        else:
+           fill(self.heart_icon, (250,50,50, 255))
+
+        screen.blit(self.heart_icon, (LEFT_MARGIN, screen_height - 70))
+
+        # Trash Icon ----
+        if state.imported_images[state.cur_img_index]in state.to_delete:
+            fill(self.trash_icon, (121,92,48, 255))
+            screen.blit(self.trash_icon, (LEFT_MARGIN + 70, screen_height - 70))
+
+    def load_image(self, state):
+        path = f"{state.source_dir}/{state.imported_images[state.cur_img_index]}"
+        state.load_image(path)
+
+    def handle_input(self, event, state: State):
+        key_mode = pygame.key.get_mods()
+        is_shift_on = key_mode == 1
+
+        keys = pygame.key.get_pressed()
+
+        if event.type == pygame.KEYDOWN:
+            if keys[pygame.K_r]:
+                if is_shift_on:
+                    state.rotate_image(90)
+                else:
+                    state.rotate_image(-90)
+
+            if keys[pygame.K_RETURN]:
+                if state.cur_img_index >= len(state.imported_images) - 1:
+                    return
+                state.change_index(1)
+
+            if keys[pygame.K_TAB]:
+                if state.cur_img_index <= 0:
+                    state.cur_img_index = len(state.imported_images)
+                state.change_index(-1)
+
+            if keys[pygame.K_f]:
+                if state.cur_img_index >= len(state.imported_images) - 1:
+                    return
+                image_name = state.imported_images[state.cur_img_index]
+                if image_name in state.favs:
+                    state.favs.remove(image_name)
+                    os.remove(f"./fav/{image_name}")
+                else:
+                    shutil.copy(f"{state.source_dir}/{image_name}", f"./fav/{image_name}")
+                    state.favs.append(image_name)
+
+            if keys[pygame.K_x]:
+                if state.cur_img_index >= len(state.imported_images) - 1:
+                    return
+
+                image_name = state.imported_images[state.cur_img_index]
+                if image_name in state.to_delete:
+                    state.to_delete.remove(state.imported_images[state.cur_img_index])
+                else:
+                    state.to_delete.append(state.imported_images[state.cur_img_index])
+
+            if keys[pygame.K_b]:
+                if configs.current_background == (0,0,0):
+                    configs.change_background(configs.theme_background[0], configs.theme_background[1], configs.theme_background[2])
+                else:
+                    configs.change_background(0,0,0)
+
+        if keys[pygame.K_i]:
+            state.zoom_image(0.05)
+
+        if keys[pygame.K_o]:
+            state.zoom_image(-0.025)
+
+        if keys[pygame.K_j]:
+            state.cur_y_padding -= 10
+
+        if keys[pygame.K_k]:
+            state.cur_y_padding += 10
+
+        if keys[pygame.K_h]:
+            state.cur_x_padding += 10
+
+        if keys[pygame.K_l]:
+            state.cur_x_padding -= 10
+
+
