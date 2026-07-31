@@ -3,7 +3,6 @@ import os
 import pygame
 
 from scenes.scene import Scene
-from state import State
 from globals import LEFT_MARGIN, RIGHT_MARGIN, TOP_MARGIN
 from configs import configs
 
@@ -19,6 +18,10 @@ class FilterScene(Scene):
         self.trash_icon = pygame.transform.scale_by(self.trash_icon, (0.08,0.08))
 
     def process(self, state, graphics):
+        if(len(state.imported_images) == 0):
+            state.switch_scene("home")
+            return
+
         graphics.write(f"Image: {state.cur_img_index + 1}/{len(state.imported_images)}", (LEFT_MARGIN, TOP_MARGIN), (205,205, 205))
 
         if not state.is_cur_image_loaded:
@@ -43,7 +46,7 @@ class FilterScene(Scene):
         path = f"{state.source_dir}/{state.imported_images[state.cur_img_index]}"
         state.load_image(path)
 
-    def handle_input(self, event, state: State):
+    def handle_input(self, event, state):
         key_mode = pygame.key.get_mods()
         is_shift_on = key_mode == 1
 
@@ -67,7 +70,7 @@ class FilterScene(Scene):
                 state.change_index(-1)
 
             if keys[pygame.K_f]:
-                if state.cur_img_index >= len(state.imported_images) - 1:
+                if state.cur_img_index >= len(state.imported_images):
                     return
                 image_name = state.imported_images[state.cur_img_index]
                 if image_name in state.favs:

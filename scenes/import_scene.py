@@ -7,7 +7,6 @@ import pygame
 
 from scenes.scene import Scene
 from graphic import Graphic
-from state import State
 
 class ImportScene(Scene):
     def __init__(self):
@@ -20,8 +19,22 @@ class ImportScene(Scene):
         self.import_rect = pygame.Rect(0, 0, 280, 70)
 
 
-    def process(self, state: State, graphic: Graphic):
+    def process(self, state, graphic: Graphic):
         center_x = graphic.screen_width // 2
+
+        if state.is_loading:
+            title = graphic.font.render(
+                "Carregando",
+                True,
+                (245, 235, 240),
+            )
+
+            title_rect = title.get_rect(
+                center=(center_x, graphic.screen_height // 2 - 180)
+            )
+            graphic.screen.blit(title, title_rect)
+            return
+
 
         title = graphic.font.render(
             "Importar arquivos",
@@ -32,6 +45,7 @@ class ImportScene(Scene):
         title_rect = title.get_rect(
             center=(center_x, graphic.screen_height // 2 - 180)
         )
+
 
         graphic.screen.blit(title, title_rect)
 
@@ -85,7 +99,7 @@ class ImportScene(Scene):
             )
 
 
-    def handle_input(self, event, state: State):
+    def handle_input(self, event, state):
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_TAB:
                 if self.selected_folder:
@@ -120,15 +134,20 @@ class ImportScene(Scene):
                 self.selected_folder
                 and self.import_rect.collidepoint(event.pos)
             ):
-                state.import_files(state)
+                self.import_and_switch(state)
 
-    def execute_selected_action(self, state: State):
+    def import_and_switch(self, state):
+        state.import_files(self.selected_folder)
+        state.load_working_directory()
+        state.switch_scene('filter')
+
+    def execute_selected_action(self, state):
         if self.selected_button == 0:
             self.select_folder()
             return
 
         if self.selected_folder:
-            state.import_files(state)
+            self.import_and_switch(state)
 
     def select_folder(self):
         folder = pick_folder_blocking()

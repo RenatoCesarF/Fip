@@ -13,16 +13,11 @@ from scenes.import_scene import ImportScene
 from scenes.filter_scene import FilterScene
 from globals import LEFT_MARGIN, RIGHT_MARGIN, TOP_MARGIN, INITIAL_HEIGHT, INITIAL_WIDTH 
 
-# - [ ] Ter uma forma de escrever com diferentes tamanhos de forma fácil no write talvez
 # - [ ] Escrever um README sobre o uso/instalação.
-# - [ ] finalizar tela de importação importando os arquivos
-# - [ ] Ter uma seta pra voltar pra home
-# - [ ] popup ou dicas, sobre teclas pra usar o programa (importante) (criar um módulo pra isso, de legendas com téclas)
+# - [ ] criar um módulo de legendas com téclas e o que elas fazem, cada tela vai ter o seu
 # - [ ] sons de favorito e deleção, além de outros sons satisfatórios pra rotacionar a aproximar.
 # - [ ] Logo simples de um coelhinho escolhendo fotos, colocar na HOME e no topo do filtro.
 # - [ ] Finalização: Decide se quer apagar todas as fotos colocadas como apagar da pasta original e apaga
-
-# - [ ] BUG: Não da pra favoritar a última foto da coleção
 
 def main():
     pygame.init()
@@ -39,6 +34,7 @@ def main():
 
     Path("./fav").mkdir(parents=True, exist_ok=True)
     Path("./pics").mkdir(parents=True, exist_ok=True)
+
     state.load_favorites()
     state.load_working_directory()
 

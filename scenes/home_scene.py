@@ -4,10 +4,7 @@ import os
 import pygame
 
 from scenes.scene import Scene
-from scenes.filter_scene import FilterScene
-from scenes.import_scene import ImportScene
 
-from state import State
 from globals import LEFT_MARGIN, RIGHT_MARGIN, TOP_MARGIN
 
 from enums.home_option import HomeOption 
@@ -24,7 +21,7 @@ class HomeScene(Scene):
         self.title_font = pygame.font.Font(None, 56)
         self.option_font = pygame.font.Font(None, 36)
 
-    def process(self, state: State, graphic: Graphic):
+    def process(self, state, graphic: Graphic):
         gap = 40
         total_width = self.filter_rect.width + self.import_rect.width + gap
         start_x = (graphic.screen_width - total_width) // 2
@@ -54,7 +51,7 @@ class HomeScene(Scene):
             state.home_selected_option == HomeOption.IMPORT,
         )
 
-    def handle_input(self, event: pygame.event.Event, state: State):
+    def handle_input(self, event: pygame.event.Event, state):
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_TAB:
                 state.change_selected_button_home()
@@ -78,9 +75,9 @@ class HomeScene(Scene):
                 state.home_selected_option = HomeOption.IMPORT
                 self.open_selected_option(state)
 
-    def open_selected_option(self, state: State):
+    def open_selected_option(self, state):
         if state.home_selected_option == HomeOption.FILTER:
-            state.switch_scene(FilterScene())
+            state.switch_scene("filter")
             return
 
-        state.switch_scene(ImportScene())
+        state.switch_scene("import")

@@ -1,11 +1,16 @@
 from os import walk
+import time
 import shutil
 
 import pygame
 
 from enums.home_option import HomeOption 
-from utils import correct_image_name
+from utils import correct_image_name, copy_only_images
 from scenes.scene import SceneEnum, Scene
+
+from scenes.filter_scene import FilterScene
+from scenes.import_scene import ImportScene
+from scenes.home_scene import HomeScene
 
 class State:
     curr_scene: Scene
@@ -25,6 +30,7 @@ class State:
     to_delete: list[str]
     imported_images: list[str]
 
+    is_loading: bool
     is_cur_image_loaded: bool
     curr_image: object
     raw_image: object
@@ -35,8 +41,9 @@ class State:
         self.curr_scene = scene
 
         self.running = True
+        self.is_loading = False
 
-        self.source_dir = f"./pics"#{datetime.today().strftime('%Y-%m-%d')}"
+        self.source_dir = f"./pics/{time.time()}"
         self.import_dir = "/Volumes/POLEN/DCIM/100MEDIA"
 
         self.favs = []
@@ -57,7 +64,16 @@ class State:
         #---- HOME ----
         self.home_selected_option = HomeOption.FILTER
 
-    def switch_scene(self, scene: Scene):
+    def switch_scene(self, scene_name: str):
+        scene = None
+
+        if scene_name == "filter":
+            scene = FilterScene()
+        elif scene_name == "import" :
+            scene = ImportScene()
+        elif scene_name == "home" :
+            scene = HomeScene()
+
         self.curr_scene = scene
 
     def load_favorites(self):
@@ -69,7 +85,10 @@ class State:
         self.imported_images = [correct_image_name(img) for img in self.imported_images]
 
     def import_files(self, import_dir):
-        shutil.copytree(import_dir, state.source_dir)
+        self.is_loading = True
+        self.import_dir = import_dir
+        shutil.copytree(self.import_dir, self.source_dir, ignore=copy_only_images)
+        self.is_loading = False
 
     def rotate_image(self, amount: int):
         self.curr_image = pygame.transform.rotate(self.curr_image, amount)
@@ -95,6 +114,7 @@ class State:
                      (height/2) - half_height))
 
     def load_image(self, path):
+        print(path)
         self.curr_image = pygame.image.load(path).convert()
         self.raw_image = self.curr_image
         self.curr_image = pygame.transform.scale_by(self.curr_image, (self.cur_scale , self.cur_scale))
