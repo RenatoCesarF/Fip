@@ -12,6 +12,7 @@ from graphic import Graphic
 from scenes.home_scene import HomeScene
 from scenes.import_scene import ImportScene
 from scenes.filter_scene import FilterScene
+from sounds import Sounds
 from globals import LEFT_MARGIN, RIGHT_MARGIN, TOP_MARGIN, INITIAL_HEIGHT, INITIAL_WIDTH 
 
 # - [ ] Escrever um README sobre o uso/instalação.
@@ -20,6 +21,7 @@ from globals import LEFT_MARGIN, RIGHT_MARGIN, TOP_MARGIN, INITIAL_HEIGHT, INITI
 # - [ ] Logo simples de um coelhinho escolhendo fotos, colocar na HOME e no topo do filtro.
 # - [ ] Finalização: Decide se quer apagar todas as fotos colocadas como apagar da pasta original e apaga
 # - [ ] Remover dependencia do Theme, pois nào faz mais sentido
+# - [ ] Mute and unmute button
 
 def main():
     pygame.init()
@@ -32,6 +34,7 @@ def main():
     pygame.display.set_caption("FIP - FilterIng Pictures")
 
     graphics = Graphic(screen, font)
+    sounds = Sounds.load()
     state = State(HomeScene())
 
     Path("./fav").mkdir(parents=True, exist_ok=True)

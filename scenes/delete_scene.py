@@ -9,8 +9,8 @@ class DeleteScene(Scene):
 
     def __init__(self):
         self.passes = 0
-        self.no_rect = pygame.Rect(0, 0, 260, 180)
-        self.yes_rect = pygame.Rect(0, 0, 260, 180)
+        self.no_rect = pygame.Rect(0, 0, 230, 120)
+        self.yes_rect = pygame.Rect(0, 0, 230, 120)
         self.options_rect = pygame.Rect(0, 0, 280, 70)
         pass
 

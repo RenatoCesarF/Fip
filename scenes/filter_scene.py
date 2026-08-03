@@ -6,6 +6,7 @@ import os, glob
 
 from scenes.scene import Scene
 from globals import LEFT_MARGIN, RIGHT_MARGIN, TOP_MARGIN
+from sounds import Sounds
 from configs import configs
 
 class FilterScene(Scene):
@@ -62,6 +63,7 @@ class FilterScene(Scene):
 
         if event.type == pygame.KEYDOWN:
             if keys[pygame.K_r]:
+                Sounds.rotate.play()
                 if is_shift_on:
                     state.rotate_image(90)
                 else:
@@ -72,16 +74,21 @@ class FilterScene(Scene):
                     state.switch_scene('delete')
                     return
 
+                Sounds.passing.play()
                 state.change_index(1)
 
             if keys[pygame.K_TAB]:
                 if state.cur_img_index <= 0:
                     state.cur_img_index = len(state.imported_images)
+
+                Sounds.passing.play()
                 state.change_index(-1)
 
             if keys[pygame.K_f]:
                 if state.cur_img_index >= len(state.imported_images):
                     return
+
+                Sounds.favorite.play()
                 image_name = state.imported_images[state.cur_img_index]
                 if image_name in state.favs:
                     state.favs.remove(image_name)
@@ -94,6 +101,7 @@ class FilterScene(Scene):
                 if state.cur_img_index >= len(state.imported_images):
                     return
 
+                Sounds.trash.play()
                 image_name = state.imported_images[state.cur_img_index]
                 if image_name in state.to_delete:
                     state.to_delete.remove(state.imported_images[state.cur_img_index])
