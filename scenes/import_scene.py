@@ -1,5 +1,6 @@
 import os
 import tkinter as tk
+from threading import Thread
 
 
 from file_picker_py import pick_folder_blocking
@@ -9,7 +10,17 @@ from scenes.scene import Scene
 from graphic import Graphic
 
 class ImportScene(Scene):
+    is_loading: bool
+    selected_folder: str | None
+
+    file_count: int
+    selected_button: int
+
+    choose_folder_rect: pygame.Rect
+    import_rect: pygame.Rect
+
     def __init__(self):
+        self.is_loading = False
         self.selected_folder: str | None = None
         self.file_count = 0
 
@@ -18,11 +29,10 @@ class ImportScene(Scene):
         self.choose_folder_rect = pygame.Rect(0, 0, 280, 70)
         self.import_rect = pygame.Rect(0, 0, 280, 70)
 
-
     def process(self, state, graphic: Graphic):
         center_x = graphic.screen_width // 2
 
-        if state.is_loading:
+        if self.is_loading:
             title = graphic.font.render(
                 "Carregando",
                 True,
@@ -60,43 +70,45 @@ class ImportScene(Scene):
             self.selected_button == 0,
         )
 
-        if self.selected_folder:
-            count_text = graphic.font.render(
-                f"{self.file_count} arquivo(s) encontrado(s)",
-                True,
-                (245, 235, 240),
-            )
+        if not self.selected_folder:
+            return
 
-            count_rect = count_text.get_rect(
-                center=(center_x, graphic.screen_height // 2 + 10)
-            )
+        count_text = graphic.font.render(
+            f"{self.file_count} arquivo(s) encontrado(s)",
+            True,
+            (245, 235, 240),
+        )
 
-            graphic.screen.blit(count_text, count_rect)
+        count_rect = count_text.get_rect(
+            center=(center_x, graphic.screen_height // 2 + 10)
+        )
 
-            folder_name = os.path.basename(self.selected_folder)
+        graphic.screen.blit(count_text, count_rect)
 
-            folder_text = graphic.font.render(
-                folder_name,
-                True,
-                (190, 165, 175),
-            )
+        folder_name = os.path.basename(self.selected_folder)
 
-            folder_rect = folder_text.get_rect(
-                center=(center_x, graphic.screen_height // 2 + 42)
-            )
+        folder_text = graphic.font.render(
+            folder_name,
+            True,
+            (190, 165, 175),
+        )
 
-            graphic.screen.blit(folder_text, folder_rect)
+        folder_rect = folder_text.get_rect(
+            center=(center_x, graphic.screen_height // 2 + 42)
+        )
 
-            self.import_rect.center = (
-                center_x,
-                graphic.screen_height // 2 + 115,
-            )
+        graphic.screen.blit(folder_text, folder_rect)
 
-            graphic.draw_button(
-                self.import_rect,
-                "Importar",
-                self.selected_button == 1,
-            )
+        self.import_rect.center = (
+            center_x,
+            graphic.screen_height // 2 + 115,
+        )
+
+        graphic.draw_button(
+            self.import_rect,
+            "Importar",
+            self.selected_button == 1,
+        )
 
 
     def handle_input(self, event, state):
@@ -137,6 +149,7 @@ class ImportScene(Scene):
                 self.import_and_switch(state)
 
     def import_and_switch(self, state):
+        self.is_loading = True
         state.import_files(self.selected_folder)
         state.load_working_directory()
         state.switch_scene('filter')

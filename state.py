@@ -1,5 +1,6 @@
 from os import walk
 import time
+import os
 import shutil
 
 import pygame
@@ -7,7 +8,7 @@ import pygame
 from enums.home_option import HomeOption 
 from utils import correct_image_name, copy_only_images
 from scenes.scene import SceneEnum, Scene
-
+from scenes.delete_scene import DeleteScene
 from scenes.filter_scene import FilterScene
 from scenes.import_scene import ImportScene
 from scenes.home_scene import HomeScene
@@ -20,6 +21,7 @@ class State:
     import_dir: str
 
     cur_img_index: int
+    delete_selecteds: bool
 
     cur_rotation: int
     cur_x_padding: int
@@ -30,7 +32,6 @@ class State:
     to_delete: list[str]
     imported_images: list[str]
 
-    is_loading: bool
     is_cur_image_loaded: bool
     curr_image: object
     raw_image: object
@@ -41,7 +42,6 @@ class State:
         self.curr_scene = scene
 
         self.running = True
-        self.is_loading = False
 
         self.source_dir = f"./pics/{time.time()}"
         self.import_dir = "/Volumes/POLEN/DCIM/100MEDIA"
@@ -64,15 +64,20 @@ class State:
         #---- HOME ----
         self.home_selected_option = HomeOption.FILTER
 
+        # ---- DELETE ---- 
+        self.delete_selecteds = False
+
     def switch_scene(self, scene_name: str):
         scene = None
 
         if scene_name == "filter":
-            scene = FilterScene()
+            scene = FilterScene(self)
         elif scene_name == "import" :
             scene = ImportScene()
         elif scene_name == "home" :
             scene = HomeScene()
+        elif scene_name == "delete" :
+            scene = DeleteScene()
 
         self.curr_scene = scene
 
@@ -85,10 +90,8 @@ class State:
         self.imported_images = [correct_image_name(img) for img in self.imported_images]
 
     def import_files(self, import_dir):
-        self.is_loading = True
         self.import_dir = import_dir
         shutil.copytree(self.import_dir, self.source_dir, ignore=copy_only_images)
-        self.is_loading = False
 
     def rotate_image(self, amount: int):
         self.curr_image = pygame.transform.rotate(self.curr_image, amount)
@@ -114,7 +117,6 @@ class State:
                      (height/2) - half_height))
 
     def load_image(self, path):
-        print(path)
         self.curr_image = pygame.image.load(path).convert()
         self.raw_image = self.curr_image
         self.curr_image = pygame.transform.scale_by(self.curr_image, (self.cur_scale , self.cur_scale))
@@ -128,3 +130,8 @@ class State:
             return
 
         self.home_selected_option = HomeOption.FILTER
+
+    def delete_files_trashed(self):
+        for item in self.to_delete:
+            print(item)
+            os.remove(f"{self.source_dir}/{item}")

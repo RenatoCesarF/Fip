@@ -7,6 +7,7 @@ import pygame
 from configs import configs
 from state import State
 from utils import correct_image_name
+from colors import Colors
 from graphic import Graphic
 from scenes.home_scene import HomeScene
 from scenes.import_scene import ImportScene
@@ -18,6 +19,7 @@ from globals import LEFT_MARGIN, RIGHT_MARGIN, TOP_MARGIN, INITIAL_HEIGHT, INITI
 # - [ ] sons de favorito e deleção, além de outros sons satisfatórios pra rotacionar a aproximar.
 # - [ ] Logo simples de um coelhinho escolhendo fotos, colocar na HOME e no topo do filtro.
 # - [ ] Finalização: Decide se quer apagar todas as fotos colocadas como apagar da pasta original e apaga
+# - [ ] Remover dependencia do Theme, pois nào faz mais sentido
 
 def main():
     pygame.init()
@@ -48,7 +50,7 @@ def main():
 
             state.curr_scene.handle_input(event, state)
 
-        screen.fill((30, 22, 27))
+        screen.fill(Colors.dark)
 
         state.curr_scene.process(state, graphics)
 

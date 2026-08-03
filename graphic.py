@@ -1,4 +1,5 @@
 import pygame
+from colors import Colors
 from globals import INITIAL_HEIGHT, INITIAL_WIDTH 
 
 class Graphic:
@@ -37,19 +38,19 @@ class Graphic:
         selected: bool,
     ):
         if selected:
-            background = (255, 192, 203)
-            border = (255, 225, 230)
-            text_color = (45, 30, 35)
+            background = Colors.primary
+            border = Colors.border
+            text_color = Colors.brown
         else:
-            background = (75, 55, 65)
-            border = (125, 90, 105)
-            text_color = (245, 235, 240)
+            background = Colors.secondary
+            border = Colors.border_alt
+            text_color = Colors.white
 
         pygame.draw.rect(
             self.screen,
             background,
             rect,
-            border_radius=12,
+            border_radius=10,
         )
 
         pygame.draw.rect(

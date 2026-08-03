@@ -2,6 +2,8 @@ import shutil
 import os
 import pygame
 
+import os, glob
+
 from scenes.scene import Scene
 from globals import LEFT_MARGIN, RIGHT_MARGIN, TOP_MARGIN
 from configs import configs
@@ -10,16 +12,22 @@ class FilterScene(Scene):
     heart_icon: pygame.Surface
     trash_icon: pygame.Surface
 
-    def __init__(self):
+    def __init__(self, state):
         self.heart_icon = pygame.image.load("./assets/fav.png").convert_alpha()
         self.heart_icon = pygame.transform.scale_by(self.heart_icon, (0.05,0.05))
 
         self.trash_icon = pygame.image.load("./assets/trash.png").convert_alpha()
         self.trash_icon = pygame.transform.scale_by(self.trash_icon, (0.08,0.08))
 
+        state.cur_img_index = 0
+        state.is_cur_image_loaded = False
+        state.imported_images = []
+ 
     def process(self, state, graphics):
         if(len(state.imported_images) == 0):
-            state.switch_scene("home")
+            last_dir = max([os.path.join('./pics',d) for d in os.listdir("./pics")], key=os.path.getmtime)
+            state.source_dir = last_dir
+            state.load_working_directory()
             return
 
         graphics.write(f"Image: {state.cur_img_index + 1}/{len(state.imported_images)}", (LEFT_MARGIN, TOP_MARGIN), (205,205, 205))
@@ -39,7 +47,7 @@ class FilterScene(Scene):
 
         # Trash Icon ----
         if state.imported_images[state.cur_img_index]in state.to_delete:
-            fill(self.trash_icon, (121,92,48, 255))
+            graphics.fill(self.trash_icon, (121,92,48, 255))
             graphics.screen.blit(self.trash_icon, (LEFT_MARGIN + 70, graphics.screen_height - 70))
 
     def load_image(self, state):
@@ -60,8 +68,10 @@ class FilterScene(Scene):
                     state.rotate_image(-90)
 
             if keys[pygame.K_RETURN]:
-                if state.cur_img_index >= len(state.imported_images) - 1:
+                if state.cur_img_index == len(state.imported_images) -1:
+                    state.switch_scene('delete')
                     return
+
                 state.change_index(1)
 
             if keys[pygame.K_TAB]:
@@ -81,7 +91,7 @@ class FilterScene(Scene):
                     state.favs.append(image_name)
 
             if keys[pygame.K_x]:
-                if state.cur_img_index >= len(state.imported_images) - 1:
+                if state.cur_img_index >= len(state.imported_images):
                     return
 
                 image_name = state.imported_images[state.cur_img_index]

@@ -10,6 +10,8 @@ class SceneEnum(Enum):
     FINISH = 3
 
 class Scene(ABC):
+    controlls: dict[str, str] = {}
+
     @abstractmethod
     def process(self, state, graphics):
         """Every payment method must implement this."""
