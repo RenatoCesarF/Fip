@@ -3,7 +3,6 @@ import pygame
 
 from scenes.scene import Scene
 from globals import LEFT_MARGIN, RIGHT_MARGIN, TOP_MARGIN
-from configs import configs
 
 class DeleteScene(Scene):
 

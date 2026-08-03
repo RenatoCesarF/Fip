@@ -56,7 +56,6 @@ class ImportScene(Scene):
             center=(center_x, graphic.screen_height // 2 - 180)
         )
 
-
         graphic.screen.blit(title, title_rect)
 
         self.choose_folder_rect.center = (
@@ -66,7 +65,7 @@ class ImportScene(Scene):
 
         graphic.draw_button(
             self.choose_folder_rect,
-            "Escolher pasta",
+            "Choose Folder",
             self.selected_button == 0,
         )
 
@@ -74,7 +73,7 @@ class ImportScene(Scene):
             return
 
         count_text = graphic.font.render(
-            f"{self.file_count} arquivo(s) encontrado(s)",
+            f"{self.file_count} Files founded",
             True,
             (245, 235, 240),
         )
@@ -106,7 +105,7 @@ class ImportScene(Scene):
 
         graphic.draw_button(
             self.import_rect,
-            "Importar",
+            "Import",
             self.selected_button == 1,
         )
 
@@ -178,7 +177,5 @@ class ImportScene(Scene):
 
         self.selected_button = 1
 
-        # Remove eventos de teclado acumulados enquanto
-        # o seletor de pasta estava aberto.
         pygame.event.clear()
 

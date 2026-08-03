@@ -11,7 +11,6 @@ from enums.home_option import HomeOption
 from graphic import Graphic
 from colors import Colors
 from logo import Logo
-from configs import configs
 
 class HomeScene(Scene):
     args: list[any]

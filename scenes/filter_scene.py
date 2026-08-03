@@ -8,7 +8,6 @@ from scenes.scene import Scene
 from globals import LEFT_MARGIN, RIGHT_MARGIN, TOP_MARGIN
 from sounds import Sounds
 from logo import Logo
-from configs import configs
 
 class FilterScene(Scene):
     heart_icon: pygame.Surface

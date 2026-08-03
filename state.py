@@ -92,6 +92,7 @@ class State:
         self.imported_images = [correct_image_name(img) for img in self.imported_images]
 
     def import_files(self, import_dir):
+        self.source_dir = f"./pics/{time.time()}"
         self.import_dir = import_dir
         shutil.copytree(self.import_dir, self.source_dir, ignore=copy_only_images)
 

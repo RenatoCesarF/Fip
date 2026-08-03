@@ -4,7 +4,6 @@ import sys
 
 import pygame
 
-from configs import configs
 from state import State
 from utils import correct_image_name
 from colors import Colors
@@ -18,8 +17,6 @@ from globals import LEFT_MARGIN, RIGHT_MARGIN, TOP_MARGIN, INITIAL_HEIGHT, INITI
 
 # - [ ] Escrever um README sobre o uso/instalação.
 # - [ ] criar um módulo de legendas com téclas e o que elas fazem, cada tela vai ter o seu
-# - [ ] Logo simples de um coelhinho escolhendo fotos, colocar na HOME e no topo do filtro.
-# - [ ] Finalização: Decide se quer apagar todas as fotos colocadas como apagar da pasta original e apaga
 # - [ ] Remover dependencia do Theme, pois nào faz mais sentido
 # - [ ] Mute and unmute button
 
