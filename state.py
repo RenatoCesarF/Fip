@@ -16,6 +16,7 @@ from scenes.home_scene import HomeScene
 class State:
     curr_scene: Scene
     running: bool
+    focus: bool
 
     source_dir: str
     import_dir: str
@@ -42,6 +43,7 @@ class State:
         self.curr_scene = scene
 
         self.running = True
+        self.focus = False
 
         self.source_dir = f"./pics/{time.time()}"
         self.import_dir = "/Volumes/POLEN/DCIM/100MEDIA"

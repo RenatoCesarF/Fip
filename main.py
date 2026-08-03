@@ -26,12 +26,17 @@ from globals import LEFT_MARGIN, RIGHT_MARGIN, TOP_MARGIN, INITIAL_HEIGHT, INITI
 def main():
     pygame.init()
     pygame.key.set_repeat()
+
     font = pygame.font.Font(pygame.font.get_default_font(), 20)
 
     clock = pygame.time.Clock()
     screen = pygame.display.set_mode((INITIAL_WIDTH, INITIAL_HEIGHT), pygame.RESIZABLE)
 
     pygame.display.set_caption("FIP - FilterIng Pictures")
+
+    icon = pygame.image.load("./assets/icon.png").convert_alpha()
+    pygame.display.set_icon(icon)
+
 
     graphics = Graphic(screen, font)
     sounds = Sounds.load()
@@ -54,7 +59,10 @@ def main():
 
             state.curr_scene.handle_input(event, state)
 
-        screen.fill(Colors.dark)
+        if state.focus:
+            screen.fill((0,0,0))
+        else:
+            screen.fill(Colors.dark)
 
         state.curr_scene.process(state, graphics)
 

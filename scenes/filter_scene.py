@@ -7,6 +7,7 @@ import os, glob
 from scenes.scene import Scene
 from globals import LEFT_MARGIN, RIGHT_MARGIN, TOP_MARGIN
 from sounds import Sounds
+from logo import Logo
 from configs import configs
 
 class FilterScene(Scene):
@@ -31,7 +32,12 @@ class FilterScene(Scene):
             state.load_working_directory()
             return
 
-        graphics.write(f"Image: {state.cur_img_index + 1}/{len(state.imported_images)}", (LEFT_MARGIN, TOP_MARGIN), (205,205, 205))
+        if not state.focus:
+            small_logo = pygame.transform.scale_by(Logo.square, (0.2, 0.2))
+            graphics.screen.blit(small_logo, (LEFT_MARGIN, TOP_MARGIN))
+
+            amount_x = graphics.screen_width - RIGHT_MARGIN - 120
+            graphics.write(f"Image: {state.cur_img_index + 1}/{len(state.imported_images)}", (amount_x, TOP_MARGIN), (205,205, 205))
 
         if not state.is_cur_image_loaded:
             self.load_image(state)
@@ -39,6 +45,8 @@ class FilterScene(Scene):
         state.draw_current_image(graphics.screen, graphics.screen_width, graphics.screen_height)
 
         # Heart Icon ----
+        if state.focus:
+            return
         if state.imported_images[state.cur_img_index] not in state.favs:
            graphics.fill(self.heart_icon, (50,50,50, 200))
         else:
@@ -109,10 +117,7 @@ class FilterScene(Scene):
                     state.to_delete.append(state.imported_images[state.cur_img_index])
 
             if keys[pygame.K_b]:
-                if configs.current_background == (0,0,0):
-                    configs.change_background(configs.theme_background[0], configs.theme_background[1], configs.theme_background[2])
-                else:
-                    configs.change_background(0,0,0)
+                state.focus = not state.focus
 
         if keys[pygame.K_i]:
             state.zoom_image(0.05)
