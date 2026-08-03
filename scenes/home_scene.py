@@ -9,14 +9,16 @@ from globals import LEFT_MARGIN, RIGHT_MARGIN, TOP_MARGIN
 
 from enums.home_option import HomeOption 
 from graphic import Graphic
+from colors import Colors
+from logo import Logo
 from configs import configs
 
 class HomeScene(Scene):
     args: list[any]
 
     def __init__(self):
-        self.filter_rect = pygame.Rect(0, 0, 260, 180)
-        self.import_rect = pygame.Rect(0, 0, 260, 180)
+        self.filter_rect = pygame.Rect(0, 100, 240, 150)
+        self.import_rect = pygame.Rect(0, 100, 240, 150)
 
         self.title_font = pygame.font.Font(None, 56)
         self.option_font = pygame.font.Font(None, 36)
@@ -25,17 +27,20 @@ class HomeScene(Scene):
         gap = 40
         total_width = self.filter_rect.width + self.import_rect.width + gap
         start_x = (graphic.screen_width - total_width) // 2
-        y = (graphic.screen_height - self.filter_rect.height) // 2
+        y = (graphic.screen_height - self.filter_rect.height + 100) // 2
 
-        self.filter_rect.topleft = (start_x, y)
+        self.filter_rect.topleft = (start_x, y + 30)
         self.import_rect.topleft = (
             start_x + self.filter_rect.width + gap,
-            y,
+            y + 30,
         )
 
-        title = self.title_font.render("Choose an option", True, (240, 240, 240))
+        w,h = Logo.large.get_size()
+        graphic.screen.blit(Logo.large,  (graphic.screen_width // 2 - w/2, y - 280))
+
+        title = self.title_font.render("Choose an option", True, Colors.white)
         title_rect = title.get_rect(
-            center=(graphic.screen_width // 2, y - 80),
+            center=(graphic.screen_width // 2, y + 250),
         )
         graphic.screen.blit(title, title_rect)
 

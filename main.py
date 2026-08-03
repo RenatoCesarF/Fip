@@ -13,11 +13,11 @@ from scenes.home_scene import HomeScene
 from scenes.import_scene import ImportScene
 from scenes.filter_scene import FilterScene
 from sounds import Sounds
+from logo import Logo
 from globals import LEFT_MARGIN, RIGHT_MARGIN, TOP_MARGIN, INITIAL_HEIGHT, INITIAL_WIDTH 
 
 # - [ ] Escrever um README sobre o uso/instalação.
 # - [ ] criar um módulo de legendas com téclas e o que elas fazem, cada tela vai ter o seu
-# - [ ] sons de favorito e deleção, além de outros sons satisfatórios pra rotacionar a aproximar.
 # - [ ] Logo simples de um coelhinho escolhendo fotos, colocar na HOME e no topo do filtro.
 # - [ ] Finalização: Decide se quer apagar todas as fotos colocadas como apagar da pasta original e apaga
 # - [ ] Remover dependencia do Theme, pois nào faz mais sentido
@@ -35,6 +35,7 @@ def main():
 
     graphics = Graphic(screen, font)
     sounds = Sounds.load()
+    logo = Logo.load()
     state = State(HomeScene())
 
     Path("./fav").mkdir(parents=True, exist_ok=True)
