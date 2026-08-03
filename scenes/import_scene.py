@@ -1,5 +1,4 @@
 import os
-import tkinter as tk
 from threading import Thread
 
 
@@ -47,7 +46,7 @@ class ImportScene(Scene):
 
 
         title = graphic.font.render(
-            "Importar arquivos",
+            "Import files",
             True,
             (245, 235, 240),
         )
